@@ -116,6 +116,7 @@ def get_repositories(
         if not team or username:
             response = requests.get("https://api.bitbucket.org/2.0/user/", auth=auth)
             username = response.json().get("username")
+            username = username.replace(".","")
         url = "https://api.bitbucket.org/2.0/repositories/{}/".format(team or username)
 
         response = requests.get(url, auth=auth)
@@ -156,6 +157,7 @@ def clone_repo(
     scm = repo.get("scm")
     slug = repo.get("slug")
     owner = repo.get("owner").get("username") or repo.get("owner").get("nickname")
+    #owner = owner.replace(".", "")
     owner_url = quote(owner)
     if http and not all((username, password)):
         exit("Cannot backup via http without username and password" % scm)
@@ -180,13 +182,13 @@ def clone_repo(
                 git_command,
                 quote(username),
                 quote(password),
-                owner_url,
+                owner_url.replace(".", ""),
                 slug_url,
             )
         else:
             command = "%s git@bitbucket.org:%s/%s.git" % (
                 git_command,
-                owner_url,
+                owner_url.replace(".", ""),
                 slug_url,
             )
     if not command:
